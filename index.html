@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrystieHunter • intelligence framework</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90' fill='%23FF2C2C'%3E%26%2312804%3B%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Matrix Rain Canvas -->
+    <canvas id="matrix-canvas"></canvas>
+    
+    <div class="container">
+        <!-- Header - ADDED glass-card -->
+        <div class="header glass-card">
+            <div class="header-content">
+                <div class="brand">
+                    <span class="brand-icon"><i class="fas fa-skull"></i></span>
+                    <div style="display: flex; flex-direction: column;">
+                        <h1 style="margin-bottom: 0;">CrystieHunter</h1>
+                        <span style="font-size: 0.7rem; color: var(--accent-secondary); letter-spacing: 1px; text-transform: uppercase; margin-left: 200px;">⚡ MADE BY YG</span>
+                    </div>
+                </div>
+                <div class="badge-fleet">
+                    <span class="badge"><i class="fas fa-project-diagram"></i> NETWORK RECON</span>
+                    <span class="badge"><i class="fas fa-globe"></i> DNS/WHOIS</span>
+                    <span class="badge"><i class="fas fa-shield-alt"></i> SHODAN</span>
+                    <span class="badge"><i class="fas fa-hashtag"></i> 150+ SOCIAL</span>
+                </div>
+            </div>
+        </div>
+        <!-- Status Bar - ADDED glass-card -->
+        <div class="status-bar glass-card">
+            <div class="status-item">
+                <span class="status-led online" id="systemLed"></span>
+                <span class="status-label">SYSTEM:</span>
+                <span class="status-value" id="systemText">ONLINE</span>
+            </div>
+            <div class="status-item">
+                <span class="status-led" id="scanLed"></span>
+                <span class="status-label">SCAN:</span>
+                <span class="status-value" id="scanText">IDLE</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">🎯 TARGET:</span>
+                <span class="status-value" id="targetDisplay">-</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">🔧 TOOLS:</span>
+                <span class="status-value">40+</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">👥 SOCIAL:</span>
+                <span class="status-value">150+</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">📊 FINDINGS:</span>
+                <span class="status-value" id="findingsCount">0</span>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Left Control Panel - ADDED glass-card -->
+            <div class="control-panel glass-card">
+                <div class="panel-header">
+                    <i class="fas fa-terminal"></i>
+                    <h2>COMMAND CENTER</h2>
+                </div>
+                
+                <div class="panel-body">
+                    <!-- Target Type Selector -->
+                    <div class="section-title">
+                        <i class="fas fa-bullseye"></i>
+                        <span>TARGET TYPE</span>
+                    </div>
+                    <div class="target-grid">
+                        <div class="target-card active" data-type="domain">
+                            <i class="fas fa-globe"></i>
+                            <span>DOMAIN</span>
+                        </div>
+                        <div class="target-card" data-type="ip">
+                            <i class="fas fa-network-wired"></i>
+                            <span>IP</span>
+                        </div>
+                        <div class="target-card" data-type="username">
+                            <i class="fas fa-user"></i>
+                            <span>USERNAME</span>
+                        </div>
+                        <div class="target-card" data-type="person">
+                            <i class="fas fa-users"></i>
+                            <span>PERSON</span>
+                        </div>
+                        <div class="target-card" data-type="email">
+                            <i class="fas fa-envelope"></i>
+                            <span>EMAIL</span>
+                        </div>
+                        <div class="target-card" data-type="phone">
+                            <i class="fas fa-phone"></i>
+                            <span>PHONE</span>
+                        </div>
+                        <div class="target-card" data-type="image">
+                            <i class="fas fa-camera"></i>
+                            <span>IMAGE</span>
+                        </div>
+                        <div class="target-card" data-type="company">
+                            <i class="fas fa-building"></i>
+                            <span>COMPANY</span>
+                        </div>
+                    </div>
+
+                    <!-- API Mode -->
+                    <div class="section-title">
+                        <i class="fas fa-key"></i>
+                        <span>API MODE</span>
+                    </div>
+                    <div class="api-toggle-container">
+                        <button class="api-option active" onclick="setApiMode('demo')">
+                            <i class="fas fa-flask"></i>
+                            <span>DEMO</span>
+                        </button>
+                        <button class="api-option" onclick="setApiMode('real')">
+                            <i class="fas fa-database"></i>
+                            <span>REAL</span>
+                        </button>
+                    </div>
+
+                    <!-- API Key Section -->
+                    <div id="apiKeySection" style="display: none;" class="api-keys-panel">
+                        <div class="api-key-group">
+                            <label>HaveIBeenPwned API Key</label>
+                            <input type="text" class="matrix-input" id="hibpKey" placeholder="Enter HIBP API Key">
+                            <span class="input-hint">Get at: haveibeenpwned.com/API/Key ($3.50/month)</span>
+                        </div>
+                        
+                        <div class="api-key-group">
+                            <label>Shodan API Key</label>
+                            <input type="text" class="matrix-input" id="shodanKey" placeholder="Enter Shodan API Key">
+                            <span class="input-hint">Get at: shodan.io (Free tier available)</span>
+                        </div>
+                        
+                        <div class="api-key-group">
+                            <label>SerperDev API Key</label>
+                            <input type="text" class="matrix-input" id="serperKey" placeholder="Enter SerperDev API Key">
+                            <span class="input-hint">Get at: serper.dev (2500 free queries)</span>
+                        </div>
+                        
+                        <div class="api-key-group">
+                            <label>Abstract API Key</label>
+                            <input type="text" class="matrix-input" id="abstractKey" placeholder="Enter Abstract API Key">
+                            <span class="input-hint">Get at: abstractapi.com (Free tier)</span>
+                        </div>
+                        
+                        <div class="api-key-group">
+                            <label>IPinfo API Key</label>
+                            <input type="text" class="matrix-input" id="ipinfoKey" placeholder="Enter IPinfo API Key">
+                            <span class="input-hint">Get at: ipinfo.io (50k free requests/month)</span>
+                        </div>
+                        
+                        <div class="api-key-group">
+                            <label>WhoisXML API Key</label>
+                            <input type="text" class="matrix-input" id="whoisKey" placeholder="Enter WhoisXML API Key">
+                            <span class="input-hint">Get at: whoisxmlapi.com (500 free credits)</span>
+                        </div>
+                        
+                        <button class="btn-secondary" style="width:100%; margin-top: 10px;" onclick="saveApiKeys()">💾 SAVE KEYS</button>
+                        <button class="btn-secondary" style="width:100%; margin-top: 5px;" onclick="testApiKeys()">🔍 TEST CONNECTION</button>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div class="section-title">
+                        <i class="fas fa-pencil-alt"></i>
+                        <span>TARGET INPUT</span>
+                    </div>
+                    <div id="inputArea">
+                        <input type="text" class="matrix-input large" id="targetInput" placeholder="Enter target...">
+                    </div>
+
+                    <!-- Upload Area -->
+                    <div id="uploadArea" style="display: none;">
+                        <div class="upload-zone" id="dropZone">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Drop image or click to upload</p>
+                            <small>PNG, JPG (Max 10MB)</small>
+                            <input type="file" id="fileInput" accept="image/*" hidden>
+                        </div>
+                        <div class="file-info" id="fileInfo"></div>
+                    </div>
+
+                    <!-- Category Tabs -->
+                    <div class="section-title">
+                        <i class="fas fa-cubes"></i>
+                        <span>MODULES</span>
+                        <div class="module-controls">
+                            <button class="icon-btn" onclick="selectAllModules()"><i class="fas fa-check-double"></i></button>
+                            <button class="icon-btn" onclick="deselectAllModules()"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-tabs">
+                        <span class="filter-tab active" onclick="filterModules('all')">ALL</span>
+                        <span class="filter-tab" onclick="filterModules('network')">NETWORK</span>
+                        <span class="filter-tab" onclick="filterModules('social')">SOCIAL</span>
+                        <span class="filter-tab" onclick="filterModules('recon')">RECON</span>
+                    </div>
+
+                    <!-- Module Grid -->
+                    <div class="module-grid" id="moduleGrid"></div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn-primary" onclick="startScan()">
+                            <i class="fas fa-play"></i>
+                            <span>INITIATE SCAN</span>
+                        </button>
+                        <button class="btn-secondary" onclick="exportResults()">
+                            <i class="fas fa-download"></i>
+                            <span>EXPORT</span>
+                        </button>
+                        <button class="btn-danger" onclick="clearAll()">
+                            <i class="fas fa-trash-alt"></i>
+                            <span>CLEAR</span>
+                        </button>
+                    </div>
+
+                    <!-- Export Panel -->
+                    <div class="export-panel" id="exportPanel">
+                        <div class="export-grid">
+                            <button class="export-btn" onclick="exportAs('json')">JSON</button>
+                            <button class="export-btn" onclick="exportAs('txt')">TXT</button>
+                            <button class="export-btn" onclick="exportAs('html')">HTML</button>
+                            <button class="export-btn" onclick="exportAs('csv')">CSV</button>
+                            <button class="export-btn" onclick="exportAs('pdf')">PDF</button>
+                            <button class="export-btn" onclick="exportAs('md')">MD</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Output Panel - ADDED glass-card -->
+            <div class="output-panel glass-card">
+                <div class="output-tabs">
+                    <button class="output-tab active" data-tab="terminal"><i class="fas fa-terminal"></i> TERMINAL</button>
+                    <button class="output-tab" data-tab="findings"><i class="fas fa-list"></i> FINDINGS</button>
+                    <button class="output-tab" data-tab="network"><i class="fas fa-network-wired"></i> NETWORK</button>
+                    <button class="output-tab" data-tab="social"><i class="fas fa-users"></i> SOCIAL</button>
+                    <button class="output-tab" data-tab="metadata"><i class="fas fa-camera"></i> METADATA</button>
+                    <button class="output-tab" data-tab="stats"><i class="fas fa-chart-line"></i> STATS</button>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                    <span class="progress-text" id="progressText">0%</span>
+                </div>
+
+                <!-- Content Panes -->
+                <div class="output-content">
+                    <!-- Terminal -->
+                    <div class="pane active" id="terminalPane">
+                        <div class="terminal" id="terminal"></div>
+                    </div>
+
+                    <!-- Findings -->
+                    <div class="pane" id="findingsPane">
+                        <div class="findings-grid" id="findingsGrid"></div>
+                    </div>
+
+                    <!-- Network -->
+                    <div class="pane" id="networkPane">
+                        <div class="network-grid" id="networkGrid"></div>
+                    </div>
+
+                    <!-- Social -->
+                    <div class="pane" id="socialPane">
+                        <div class="social-grid" id="socialGrid"></div>
+                    </div>
+
+                    <!-- Metadata -->
+                    <div class="pane" id="metadataPane">
+                        <div class="metadata-grid" id="metadataGrid"></div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="pane" id="statsPane">
+                        <div class="stats-dashboard">
+                            <div class="stats-cards">
+                                <div class="stat-card">
+                                    <div class="stat-value" id="statQueries">0</div>
+                                    <div class="stat-label">QUERIES</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-value" id="statFindings">0</div>
+                                    <div class="stat-label">FINDINGS</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-value" id="statNetwork">0</div>
+                                    <div class="stat-label">NETWORK</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-value" id="statSocial">0</div>
+                                    <div class="stat-label">SOCIAL</div>
+                                </div>
+                            </div>
+                            <div class="timeline-container">
+                                <h4><i class="fas fa-history"></i> ACTIVITY LOG</h4>
+                                <div class="timeline" id="timeline"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal - ADDED glass-card -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h3 id="modalTitle"></h3>
+                <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
